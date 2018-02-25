@@ -663,6 +663,7 @@ const NSInteger TRANSPARENT_NAVBAR_TAG = 78264803;
         if ([prefersLargeTitles boolValue]) {
           self.navigationController.navigationBar.prefersLargeTitles = YES;
           self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeAlways;
+          self.navigationItem.titleView = nil;
         } else {
           self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeNever;
         }
