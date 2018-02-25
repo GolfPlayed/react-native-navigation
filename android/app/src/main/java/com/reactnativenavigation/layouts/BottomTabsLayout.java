@@ -24,6 +24,7 @@ import com.reactnativenavigation.params.ContextualMenuParams;
 import com.reactnativenavigation.params.FabParams;
 import com.reactnativenavigation.params.LightBoxParams;
 import com.reactnativenavigation.params.ScreenParams;
+import com.reactnativenavigation.views.ContentView;
 import com.reactnativenavigation.params.SideMenuParams;
 import com.reactnativenavigation.params.SlidingOverlayParams;
 import com.reactnativenavigation.params.SnackbarParams;
@@ -81,6 +82,7 @@ public class BottomTabsLayout extends BaseLayout implements AHBottomNavigation.O
         createSnackbarContainer();
         showInitialScreenStack();
         setInitialTabIndex();
+        addOverlay();
     }
 
     private void setInitialTabIndex() {
@@ -129,6 +131,33 @@ public class BottomTabsLayout extends BaseLayout implements AHBottomNavigation.O
         bottomTabs = new BottomTabs(getContext());
         bottomTabs.addTabs(params.tabParams, this);
     }
+
+    private boolean addOverlay() {
+        if (params.overlayParams == null) {
+            return false;
+        }
+        ContentView overlayView = new ContentView(getContext(), params.overlayParams.screenId, params.overlayParams.navigationParams);
+        LayoutParams lp2 = new LayoutParams(params.overlayParams.width, params.overlayParams.height);
+
+        int width = (int)Math.round(ViewUtils.getWindowWidth(getActivity()));
+        int height = (int)Math.round(ViewUtils.getWindowHeight(getActivity()));
+        int navigationBarHeight = ViewUtils.getNavigationBarHeight();
+        int positionX = width/2 - params.overlayParams.width /2;
+        int positionY = height - (params.overlayParams.height + navigationBarHeight);
+        if(params.overlayParams.left != null) {
+            positionX = params.overlayParams.left;
+        }
+        if(params.overlayParams.top != null) {
+            positionY = params.overlayParams.top;
+        }
+        overlayView.setX(positionX);
+        overlayView.setY(positionY);
+        addView(overlayView, lp2);
+
+        return true;
+    }
+
+
 
     private void addBottomTabs() {
         LayoutParams lp = new LayoutParams(MATCH_PARENT, WRAP_CONTENT);

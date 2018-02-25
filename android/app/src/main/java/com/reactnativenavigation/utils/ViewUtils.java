@@ -29,6 +29,7 @@ public class ViewUtils {
     private static final AtomicInteger viewId = new AtomicInteger(1);
     private static int statusBarHeight = -1;
     private static int toolBarHeight = -1;
+    private static int navigationBarHeight = -1;
 
     public static void runOnPreDraw(final View view, final Runnable task) {
         view.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
@@ -193,6 +194,20 @@ public class ViewUtils {
                 (int) convertDpToPixel(56);
         return toolBarHeight;
     }
+
+    public static int getNavigationBarHeight() {
+        if (navigationBarHeight > 0) {
+            return navigationBarHeight;
+        }
+        final Resources resources = NavigationApplication.instance.getResources();
+
+        final int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
+        navigationBarHeight = resourceId > 0 ?
+                        resources.getDimensionPixelSize(resourceId) :
+                        (int) convertDpToPixel(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ? 56 : 0);
+
+        return navigationBarHeight;
+}
 
 
     public static ForegroundColorSpan[] getForegroundColorSpans(TextView view) {
