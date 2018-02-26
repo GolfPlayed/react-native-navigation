@@ -8,6 +8,8 @@ import com.reactnativenavigation.params.SideMenuParams;
 import com.reactnativenavigation.views.SideMenu;
 
 public class ActivityParamsParser extends Parser {
+    public static String PARAM_OVERLAY = "overlay";
+
     public static ActivityParams parse(Bundle params) {
         ActivityParams result = new ActivityParams();
 
@@ -21,12 +23,19 @@ public class ActivityParamsParser extends Parser {
         if (hasKey(params, "tabs")) {
             result.type = ActivityParams.Type.TabBased;
             result.tabParams = new ScreenParamsParser().parseTabs(params.getBundle("tabs"));
+            if (result.tabParams.size() == 0) {
+                throw new RuntimeException("Tried to start tab based app with zero tabs");
+            }
         }
 
         if (hasKey(params, "sideMenu")) {
             SideMenuParams[] sideMenus = SideMenuParamsParser.parse(params.getBundle("sideMenu"));
             result.leftSideMenuParams = sideMenus[SideMenu.Side.Left.ordinal()];
             result.rightSideMenuParams = sideMenus[SideMenu.Side.Right.ordinal()];
+        }
+
+        if (hasKey(params, PARAM_OVERLAY)) {
+            result.overlayParams =  OverlayParamsParser.parse(params.getBundle(PARAM_OVERLAY));
         }
 
         result.animateShow = params.getBoolean("animateShow", true);
