@@ -135,7 +135,20 @@
     
     [self setStyle:TheSideBarSideLeft];
     [self setStyle:TheSideBarSideRight];
+
+    if (self.drawerStyle[@"drawerShadow"]) {
+        self.showsShadow = ([self.drawerStyle[@"drawerShadow"] boolValue]) ? YES : NO;
+    }
     
+    if(self.showsShadow) {
+        UIView *centerView = self.centerViewController.view;
+        centerView.layer.masksToBounds = NO;
+        centerView.layer.shadowRadius = 10.0f;
+        centerView.layer.shadowOpacity = 0.8;
+        centerView.layer.shadowOffset = CGSizeMake(0, -3);
+        centerView.layer.shadowColor = [[UIColor blackColor] CGColor];
+    }
+
     NSString *contentOverlayColor = self.drawerStyle[@"contentOverlayColor"];
     if (contentOverlayColor)
     {
