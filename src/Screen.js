@@ -39,14 +39,17 @@ class Navigator {
   }
 
   pop(params = {}) {
+    this.lastScreenName = null;
     return NavigationSpecific.pop(this, params);
   }
 
   popToRoot(params = {}) {
+    this.lastScreenName = null;
     return NavigationSpecific.popToRoot(this, params);
   }
 
   resetTo(params = {}) {
+    this.lastScreenName = null;
     return NavigationSpecific.resetTo(this, params);
   }
 
