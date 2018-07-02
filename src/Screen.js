@@ -23,21 +23,33 @@ class Navigator {
     this.navigatorEventHandler = null;
     this.navigatorEventHandlers = [];
     this.navigatorEventSubscription = null;
+    this.lastScreenName = null;
   }
 
   push(params = {}) {
+    if(params.screen === this.lastScreenName) {
+      setTimeout(() => {
+        this.lastScreenName = null;
+        }, 500);
+      return;
+    }
+
+    this.lastScreenName = params.screen;
     return NavigationSpecific.push(this, params);
   }
 
   pop(params = {}) {
+    this.lastScreenName = null;
     return NavigationSpecific.pop(this, params);
   }
 
   popToRoot(params = {}) {
+    this.lastScreenName = null;
     return NavigationSpecific.popToRoot(this, params);
   }
 
   resetTo(params = {}) {
+    this.lastScreenName = null;
     return NavigationSpecific.resetTo(this, params);
   }
 
@@ -159,7 +171,7 @@ class Navigator {
     this._registerNavigatorEvent();
 
     return () => this._removeOnNavigatorEvent(callback)
-    
+
   }
 
   _registerNavigatorEvent() {
