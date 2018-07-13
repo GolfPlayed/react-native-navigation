@@ -1,5 +1,5 @@
 /*eslint-disable*/
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   NativeAppEventEmitter,
   DeviceEventEmitter,
@@ -15,6 +15,12 @@ const NavigationSpecific = {
   resetTo: platformSpecific.navigatorResetTo
 };
 
+const screens = [];
+
+export const screenAppeared = () => {
+  return screens.pop();
+};
+
 class Navigator {
   constructor(navigatorID, navigatorEventID, screenInstanceID) {
     this.navigatorID = navigatorID;
@@ -23,37 +29,37 @@ class Navigator {
     this.navigatorEventHandler = null;
     this.navigatorEventHandlers = [];
     this.navigatorEventSubscription = null;
-    this.lastScreenName = null;
   }
 
   push(params = {}) {
-    if(params.screen === this.lastScreenName) {
-      setTimeout(() => {
-        this.lastScreenName = null;
-        }, 500);
+    if (params.screen === screens[screens.length - 1]) {
       return;
     }
 
-    this.lastScreenName = params.screen;
+    screens.push(params.screen);
+
     return NavigationSpecific.push(this, params);
   }
 
   pop(params = {}) {
-    this.lastScreenName = null;
     return NavigationSpecific.pop(this, params);
   }
 
   popToRoot(params = {}) {
-    this.lastScreenName = null;
     return NavigationSpecific.popToRoot(this, params);
   }
 
   resetTo(params = {}) {
-    this.lastScreenName = null;
     return NavigationSpecific.resetTo(this, params);
   }
 
   showModal(params = {}) {
+    if (params.screen === screens[screens.length - 1]) {
+      return;
+    }
+
+    screens.push(params.screen);
+
     return Navigation.showModal(params);
   }
 
@@ -62,6 +68,8 @@ class Navigator {
   }
 
   dismissModal(params = {}) {
+    screens.pop();
+
     return Navigation.dismissModal(params);
   }
 
@@ -165,7 +173,7 @@ class Navigator {
     if (this.navigatorEventHandler) {
       throw new Error('addOnNavigatorEvent can not be used after setOnNavigatorEvent has been called');
     }
-    if (this.navigatorEventHandlers.indexOf(callback) === -1) {
+    if (this.navigatorEventHandlers.indexOf(callback) === - 1) {
       this.navigatorEventHandlers.push(callback);
     }
     this._registerNavigatorEvent();
@@ -175,7 +183,7 @@ class Navigator {
   }
 
   _registerNavigatorEvent() {
-    if (!this.navigatorEventSubscription) {
+    if (! this.navigatorEventSubscription) {
       let Emitter = Platform.OS === 'android' ? DeviceEventEmitter : NativeAppEventEmitter;
       this.navigatorEventSubscription = Emitter.addListener(this.navigatorEventID, (event) => this.onNavigatorEvent(event));
       Navigation.setEventHandler(this.navigatorEventID, (event) => this.onNavigatorEvent(event));
@@ -184,7 +192,7 @@ class Navigator {
 
   _removeOnNavigatorEvent(callback) {
     const index = this.navigatorEventHandlers.indexOf(callback);
-    if (index !== -1) {
+    if (index !== - 1) {
       this.navigatorEventHandlers.splice(index, 1);
     }
   }
@@ -210,7 +218,7 @@ class Navigator {
 
   async screenIsCurrentlyVisible() {
     const res = await Navigation.getCurrentlyVisibleScreenId();
-    if (!res) {
+    if (! res) {
       return false;
     }
     return res.screenId === this.screenInstanceID;

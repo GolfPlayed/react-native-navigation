@@ -1,8 +1,8 @@
 /*eslint-disable*/
 import React from 'react';
-import {AppRegistry} from 'react-native';
+import { AppRegistry } from 'react-native';
 import platformSpecific from './deprecated/platformSpecificDeprecated';
-import {Screen} from './Screen';
+import { Screen, screenAppeared } from './Screen';
 
 import PropRegistry from './PropRegistry';
 
@@ -23,9 +23,9 @@ function registerComponent(screenID, generator, store = undefined, Provider = un
 }
 
 function _registerComponentNoRedux(screenID, generator) {
-  const generatorWrapper = function() {
+  const generatorWrapper = function () {
     const InternalComponent = generator();
-    if (!InternalComponent) {
+    if (! InternalComponent) {
       console.error(`Navigation: ${screenID} registration result is 'undefined'`);
     }
 
@@ -36,13 +36,13 @@ function _registerComponentNoRedux(screenID, generator) {
       constructor(props) {
         super(props);
         this.state = {
-          internalProps: {...props, ...PropRegistry.load(props.screenInstanceID || props.passPropsKey)}
+          internalProps: { ...props, ...PropRegistry.load(props.screenInstanceID || props.passPropsKey) }
         }
       }
 
       componentWillReceiveProps(nextProps) {
         this.setState({
-          internalProps: {...PropRegistry.load(this.props.screenInstanceID || this.props.passPropsKey), ...nextProps}
+          internalProps: { ...PropRegistry.load(this.props.screenInstanceID || this.props.passPropsKey), ...nextProps }
         })
       }
 
@@ -58,7 +58,7 @@ function _registerComponentNoRedux(screenID, generator) {
 }
 
 function _registerComponentRedux(screenID, generator, store, Provider, options) {
-  const generatorWrapper = function() {
+  const generatorWrapper = function () {
     const InternalComponent = generator();
     return class extends Screen {
       static navigatorStyle = InternalComponent.navigatorStyle || {};
@@ -67,13 +67,13 @@ function _registerComponentRedux(screenID, generator, store, Provider, options) 
       constructor(props) {
         super(props);
         this.state = {
-          internalProps: {...props, ...PropRegistry.load(props.screenInstanceID || props.passPropsKey)}
+          internalProps: { ...props, ...PropRegistry.load(props.screenInstanceID || props.passPropsKey) }
         }
       }
 
       componentWillReceiveProps(nextProps) {
         this.setState({
-          internalProps: {...PropRegistry.load(this.props.screenInstanceID || this.props.passPropsKey), ...nextProps}
+          internalProps: { ...PropRegistry.load(this.props.screenInstanceID || this.props.passPropsKey), ...nextProps }
         })
       }
 
@@ -92,7 +92,7 @@ function _registerComponentRedux(screenID, generator, store, Provider, options) 
 
 function getRegisteredScreen(screenID) {
   const generator = registeredScreens[screenID];
-  if (!generator) {
+  if (! generator) {
     console.error(`Navigation.getRegisteredScreen: ${screenID} used but not yet registered`);
     return undefined;
   }
@@ -134,7 +134,7 @@ function dismissInAppNotification(params = {}) {
 async function startTabBasedApp(params) {
   try {
     return await platformSpecific.startTabBasedApp(params);
-  } catch(e) {
+  } catch (e) {
     console.error(`Error while starting app: ${e}`);
   }
 }
@@ -142,7 +142,7 @@ async function startTabBasedApp(params) {
 async function startSingleScreenApp(params) {
   try {
     return await platformSpecific.startSingleScreenApp(params);
-  } catch(e) {
+  } catch (e) {
     console.error(`Error while starting app: ${e}`);
   }
 }
@@ -158,7 +158,7 @@ function clearEventHandler(navigatorEventID) {
 function handleDeepLink(params = {}) {
   const { link, payload } = params;
 
-  if (!link) return;
+  if (! link) return;
 
   const event = {
     type: 'DeepLink',
@@ -186,6 +186,10 @@ async function getLaunchArgs() {
   return await platformSpecific.getLaunchArgs();
 }
 
+function screenDidAppear() {
+  return screenAppeared();
+}
+
 export default {
   getRegisteredScreen,
   getCurrentlyVisibleScreenId,
@@ -205,5 +209,6 @@ export default {
   handleDeepLink: handleDeepLink,
   isAppLaunched: isAppLaunched,
   isRootLaunched: isRootLaunched,
-  getLaunchArgs
+  getLaunchArgs,
+  screenDidAppear
 };
